@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="./nanachi-jssdk.js"></script>
+</head>
+<body>
+    <script>
+        var config = {
+            urlMap: [
+                {
+                    url: "touch.qunar.com/hoteldetail",
+                    query: ["seq", "checkInDate", "checkOutDate", "location", "keywords"],
+                    ali: [
+                        {
+                            url: "/pages/hotel/hotel-detail/index",
+                            query: ["seq", "checkInDate", "checkOutDate", "", ""]
+                        }
+                    ],
+                    bu: [
+                        {
+                            url: "/pages/hotel/hotel-detail/index",
+                            query: ["seq", "checkInDate", "checkOutDate", "", ""]
+                        }
+                    ],
+                    quick: [
+                        {
+                            url: "/pages/hotel/hotel-detail/index",
+                            query: ["seq", "checkInDate", "checkOutDate", "", ""]
+                        }
+                    ],
+                    wx: [
+                        {
+                            url: '/hotel/pages/hotel/hotel-detail/hotel-detail',
+                            query: ["seq", "checkInDate", "checkOutDate", "", ""]
+                        }
+                    ]
+                },
+                {
+                    url: "touch1.qunar.com/hoteldetail",
+                    query: ["seq", "checkInDate", "checkOutDate", "location", "keywords"],
+                    ali: [
+                        {
+                            url: "/pages/hotel/hotel-detail/index",
+                            query: ["seq", "checkInDate", "checkOutDate", "", ""]
+                        }
+                    ],
+                    bu: [
+                        {
+                            url: "/pages/hotel/hotel-detail/index",
+                            query: ["seq", "checkInDate", "checkOutDate", "", ""]
+                        }
+                    ],
+                    quick: [
+                        {
+                            url: "/pages/hotel/hotel-detail/index",
+                            query: ["seq", "checkInDate", "checkOutDate", "", ""]
+                        }
+                    ],
+                    wx: [
+                        {
+                            url: '/hotel/pages/hotel/hotel-detail/hotel-detail',
+                            query: ["seq", "checkInDate", "checkOutDate", "", ""]
+                        }
+                    ]
+                }
+            ]
+        }
+        XCX.init(config);
+        XCX.navigateTo({
+            url: 'touch.qunar.com/hoteldetail',
+            query: 'seq=beijing_city_2996&checkInDate=2019-03-04&checkOutDate=2019-03-05&location=gg|39.90854319522424|116.39749260066927&keywords='
+        })
+    </script>
+</body>
+</html>
