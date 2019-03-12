@@ -3,6 +3,8 @@
  * 临时支持活动使用
  */
 (function(win) {
+    // 事件数组
+    var subscribers = [];
     var XCX = {
         isAli: function () {
             return navigator.userAgent.indexOf('AlipayClient') > -1;
@@ -55,6 +57,8 @@
                 swan.webView.navigateTo(obj);
             } else if(this.isWx()) {
                 wx.miniProgram.navigateTo(obj);
+            } else if(this.isQuick()) {
+                system.go(obj.url);
             } else {
                 this.noApi();
             }
@@ -137,19 +141,6 @@
                 this.noApi();
             }
         },
-        // webView: null,
-        // setWebView: function() {
-        //     if(this.isAli()) {
-        //         return my;
-        //     } else if(this.isBu()) {
-        //         return swan.webView;
-        //     } else if(this.isWx()) {
-        //         console.log(window.wx)
-        //         return window.wx.miniProgram;
-        //     }  else if(this.isQuick()) {
-        //         return system;
-        //     } 
-        // },
         noApi: function() {
             console.log('暂无此api');
         },
@@ -158,22 +149,20 @@
             var query = typeof(obj.query) === 'object' ? obj.query : this.queryToParam(obj.query);
             var config = this.config;
             var configJson;
+            // 拿到包含各平台的配置对象
             config.urlMap.some(function(v, i) {
                 if(url === v.url) {
                     configJson = v;
                     return true;
                 }
             });
-            // query.forEach(function(v, i) {
-                
-            // });
-            // for(var k in query) {
-            //     console.log(query[k])
-            // }
-            query.keys(function(v, i) {
-                console.log(v, i)
-            })
-            console.log(configJson[this.env], query, 9999)
+            var newJson = {};
+            configJson[this.env].query.forEach(function(v, i) {
+                if(v) {
+                    newJson[v] = query[v];
+                }
+            });
+            return { url: configJson[this.env].url + '?' + this.stringifyURLParam(newJson) }
         },
         stringifyURLParam: function(param) {
             var rstString = '';
@@ -196,8 +185,63 @@
                 params[key] = value;
             }
             return params;
+        },
+        addListener: function(eventName, callback) {
+            var event = new Event(eventName, callback);
+            subscribers.push(event);
+            return event;
+        },
+        removeListener: function(event) {       //event 类型： string || Event || Array
+            var rm = function(e) {
+                var index = subscribers.indexOf(e);
+                if (index != -1) {
+                    subscribers.splice(index, 1);
+                }
+            };
+    
+            if (typeof event == 'string') {
+                subscribers.forEach(function(e,idx) {
+                    if (e.eventName == event) {
+                        subscribers.splice(idx, 1);
+                    }
+                });
+            } else if (event instanceof Event) {
+                rm(event);
+            } else if (event instanceof Array) {
+                event.forEach(function(e) {
+                    EventEmitter.removeListener(e);
+                });
+            }
+        },
+        dispatch: function(eventName, param) {
+            subscribers.forEach(function(event) {
+                if (event.eventName === eventName) {
+                    event.callback && event.callback(param);
+                }
+            });
+        },
+        lookFunc: function(eventName) {
+            let funcArr = [];
+            subscribers.forEach(function(event) {
+                if (event.eventName === eventName) {
+                    funcArr.push(event.callback.toString());
+                }
+            });
+            return funcArr;
         }
     }
+    function Event(eventName, callback) {
+        this.eventName = eventName;
+        this.callback = callback;
+    }
+    
+    Event.prototype.removeListener = function() {
+        var index = subscribers.indexOf(this);
+        if (index != -1) {
+            subscribers.splice(index, 1);
+        }
+    };
+    
     XCX.loadJs();
 
     win.XCX = XCX;
