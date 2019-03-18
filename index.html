@@ -54,10 +54,18 @@
             ]
         }
         XCX.init(config);
+        XCX.regEnv('hy', function() {
+            return true;
+        });
+        XCX.regFunc('navigateTo', function(obj) {
+            console.log(obj);
+        })
         XCX.addListener('login', login)
         XCX.navigateTo({
             url: 'touch.qunar.com/hoteldetail',
             query: 'seq=beijing_city_2996&checkInDate=2019-03-04&checkOutDate=2019-03-05&location=gg|39.90854319522424|116.39749260066927&keywords='
+        }, {
+            schema: 'qunarapp://abc'
         });
         function login() {
             const env = XCX.env;
@@ -65,8 +73,20 @@
                 XCX.navigateTo({
                     url: 'touch.qunar.com/hoteldetail',
                 })
+            } else if(env === 'hy') {
+                hysdk.login({
+                    shouldOpenLogin: true,
+                    extData: 'source=cutmoney',
+                    success: () => {
+                        this.props.changeLoginState(true);
+                        resolve();
+                    },
+                    fail: () => {
+                        Toast.show('登陆失败，请您重试');
+                        reject();
+                    }
+                });
             }
-
         }
 
         // XCX.dispatch('alert')

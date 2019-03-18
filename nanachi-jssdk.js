@@ -11,12 +11,12 @@
             // return true;
         },
         isBu: function() {
-            return navigator.userAgent.indexOf('baiduboxapp') > -1;
-            // return true;
+            // return navigator.userAgent.indexOf('baiduboxapp') > -1;
+            return true;
         },
         isWx: function() {
-            // return navigator.userAgent.indexOf('MicroMessenger') > -1;
-            return true;
+            return navigator.userAgent.indexOf('MicroMessenger') > -1;
+            // return true;
         },
         isQuick: function() {
             return (window.system && typeof window.system.go === 'function');
@@ -26,6 +26,8 @@
             console.log('init', this);
         },
         env: '',
+        // 是否是自定义环境
+        isRegEnv: false,
         config: {},
         loadJs: function() {
             if(this.isAli()) {
@@ -38,7 +40,6 @@
                 this.addScript('https://res.wx.qq.com/open/js/jweixin-1.3.2.js');
                 this.env = 'wx';
             } else if(this.isQuick()) {
-                this.addScript('https://res.wx.qq.com/open/js/jweixin-1.3.2.js');
                 this.env = 'quick';
             }
         },
@@ -175,7 +176,7 @@
         queryToParam: function(query) {
             const params = {};
             if(/^\?/.test(query)) {
-                query = query.slice(1)
+                query = query.slice(1);
             }
             const arr = query.split('&');
             let key, value;
@@ -228,6 +229,19 @@
                 }
             });
             return funcArr;
+        },
+        regEnv: function(env, callback) {
+            if(callback()) {
+                this.env = env;
+                this.isRegEnv = true;
+            }
+        },
+        regFunc: function(name, callback) {
+            if(this.isRegEnv) {
+                this[name] = function(obj, envObj) {
+                    callback(envObj);
+                }
+            }
         }
     }
     function Event(eventName, callback) {
